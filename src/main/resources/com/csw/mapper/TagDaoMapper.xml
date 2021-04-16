@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.csw.dao.TagDAO">
+
+    <insert id="add">
+        insert into tag values(#{id},#{tag})
+    </insert>
+
+    <select id="qa" resultType="Tag">
+        select * from tag
+    </select>
+
+    <delete id="del">
+        delete from tag where id=#{id}
+    </delete>
+
+
+</mapper>

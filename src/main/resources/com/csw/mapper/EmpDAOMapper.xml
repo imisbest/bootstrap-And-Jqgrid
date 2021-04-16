@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.csw.dao.EmpDAO">
+
+    <resultMap type="Emp" id="xx">
+        <id column="eid" property="id"/>
+        <result column="ename" property="name"/>
+        <result column="esalary" property="salary"/>
+        <result column="eage" property="age"/>
+        <result column="ebir" property="bir"/>
+
+        <association property="dept" javaType="Dept">
+            <id column="did" property="id"/>
+            <result column="dname" property="name"/>
+        </association>
+
+        <collection property="tags" javaType="list" ofType="Tag">
+            <id column="tid" property="id"/>
+            <result column="ttag" property="tag"/>
+        </collection>
+
+
+    </resultMap>
+
+    <!--查询所有-->
+    <select id="findAll" resultMap="xx">
+       select e.id as eid,e.name as ename,e.salary as esalary,e.age as eage,e.bir as ebir,
+		 d.id as did,d.name as dname,
+		 t.id as tid,t.tag as ttag
+		 from emp e left join dept d on e.did=d.id left join tag t left join tagz z on z.tid=t.id on z.eid=e.id
+    </select>
+
+    <!--添加-->
+    <insert id="save" parameterType="Emp">
+        insert into emp values(#{id},#{name},#{salary},#{age},#{bir},#{dept.id,jdbcType=VARCHAR})
+    </insert>
+
+    <!--删除-->
+    <delete id="delete" parameterType="String">
+        delete from emp where id=#{id}
+    </delete>
+
+    <!--修改-->
+    <update id="update" parameterType="Emp">
+        update emp set name=#{name},salary=#{salary},age=#{age},bir=#{bir},did=#{dept.id} where id=#{id}
+    </update>
+
+    <!--查询总条数-->
+    <select id="findTotalCounts" resultType="Long">
+       select count(e.id)
+		 from emp e,dept d where e.did=d.id
+    </select>
+
+
+    <!--分页查询-->
+    <select id="findByPage" resultMap="xx">
+       select e.id as eid,e.name as ename,e.salary as esalary,e.age as eage,e.bir as ebir,
+		 d.id as did,d.name as dname,
+		 t.id as tid,t.tag as ttag
+		 from (select * from emp  limit #{start},#{rows}) e left join dept d on e.did=d.id left join tag t left join tagz z on z.tid=t.id on z.eid=e.id
+
+    </select>
+
+    <select id="findSearch" resultMap="xx">
+        select e.id as eid,e.name as ename,e.salary as esalary,e.age as eage,e.bir as ebir,
+        d.id as did,d.name as dname,
+        t.id as tid,t.tag as ttag
+        from (select * from emp  limit #{start},#{rows}) e left join dept d on e.did=d.id left join tag t left join tagz z on z.tid=t.id on z.eid=e.id
+        and
+            <if test="searchOper=='eq'">
+                ${searchField} = #{searchString}
+            </if>
+            <if test="searchOper=='ne'">
+                ${searchField} != #{searchString}
+            </if>
+            <if test="searchOper=='cn'">
+                ${searchField} like concat('%',#{searchString},'%')
+            </if>
+
+
+    </select>
+
+    <select id="findTotalCountsSearch" resultType="Long">
+        select count(e.id)
+        from emp e,dept d where e.did=d.id
+      and
+            <if test="searchOper=='eq'">
+                ${searchField} = #{searchString}
+            </if>
+            <if test="searchOper=='ne'">
+                ${searchField} != #{searchString}
+            </if>
+            <if test="searchOper=='cn'">
+                ${searchField} like concat('%',#{searchString},'%')
+            </if>
+
+    </select>
+</mapper>
